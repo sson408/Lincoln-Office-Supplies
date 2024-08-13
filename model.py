@@ -1,13 +1,12 @@
 from datetime import datetime
 
 class Customer:
-    customer_counter = 1000
 
-    def __init__(self, name, balance=0.0):
-        self.customerID = Customer.customer_counter
-        Customer.customer_counter += 1
+    def __init__(self, id, name, balance, nextId):
+        self.customerID = id
         self.customerName = name
         self.customerBalance = balance
+        self.nextId = nextId
         self.orders = []
         self.payments = []
 
@@ -48,7 +47,7 @@ class Company:
         self.customers = []
         self.products = []
 
-    def add_customer(self, name, balance=0.0):
+    def add_customer(self, name, balance):
         customer = Customer(name, balance)
         self.customers.append(customer)
         return customer

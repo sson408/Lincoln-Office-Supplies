@@ -9,13 +9,28 @@ class CompanyController:
 
     def load_initial_data(self):
         # Load some sample customers and products
-        c1 = self.company.add_customer("Karina Matthews", 241.58)
-        c2 = self.company.add_customer("John Smith", 150.75)
+        c1 = self.company.add_customer("Ignacia Craft", 1500.50)
+        c2 = self.company.add_customer("Scarlett Wise", 150.75)
+        c3 = self.company.add_customer("Fredericka Houston", 200.00)
+        c4 = self.company.add_customer("Gage Rodgers", 1000.00)
+        c5 = self.company.add_customer("Gay Burris", 500.00)
+        c6 = self.company.add_customer("Imogene Cruz", 100.00)
+        c7 = self.company.add_customer("Karina Matthews", 200.00)
+        c8 = self.company.add_customer("Dara McGee", 300.00)
+        c9 = self.company.add_customer("Prescott Bowen", 400.00)
+        c10 = self.company.add_customer("Samson Howell", 500.00)
         self.view.set_customer_combobox([c.customerName for c in self.company.customers])
-
-        p1 = self.company.add_product("Post-It Notes", 779.45)
-        p2 = self.company.add_product("Blue Ballpoint Pens", 112.10)
-        p3 = self.company.add_product("Everyday Scissors", 221.55)
+        
+        p1 = self.company.add_product("Post-It Notes", 15.89)
+        p2 = self.company.add_product("Blue Ballpoint Pens Box of 50", 32.65)
+        p3 = self.company.add_product("Red Ballpoint Pens Box of 50", 32.65)
+        p4 = self.company.add_product("Black Ballpoint Pens Box of 50", 32.65)
+        p5 = self.company.add_product("Everyday Scissors 200mm", 21.85)
+        p6 = self.company.add_product("Black Whiteboard Markers Pack of 6", 20.23)
+        p7 = self.company.add_product("Red Whiteboard Markers Pack of 6", 20.23)
+        p8 = self.company.add_product("Blue Whiteboard Markers Pack of 6", 20.23)
+        p9 = self.company.add_product("White Copy Paper Pack of 500", 8.69)
+        p10 = self.company.add_product("Full Strip Metal Stapler", 41.62)
         self.view.set_product_combobox([p.productName for p in self.company.products])
 
     def display_customer_info(self, event):
@@ -26,7 +41,7 @@ class CompanyController:
                     f"Customer Name: {customer.customerName}\n"
                     f"Balance: {customer.customerBalance:.2f}\n")
             self.view.update_customer_info(info)
-            self.current_order = self.company.add_order(customer)  # 初始化当前订单
+            self.current_order = self.company.add_order(customer) 
             self.view.clear_order_details()
 
     def add_product_to_order(self):
