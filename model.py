@@ -1,12 +1,12 @@
 from datetime import datetime
 
 class Customer:
-
-    def __init__(self, id, name, balance, nextId):
-        self.customerID = id
+    nextId = 1000
+    def __init__(self, name, balance):
+        self.customerID = Customer.nextId
+        Customer.nextId += 1
         self.customerName = name
         self.customerBalance = balance
-        self.nextId = nextId
         self.orders = []
         self.payments = []
 
