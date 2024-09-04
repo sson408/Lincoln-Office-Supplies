@@ -9,16 +9,16 @@ class CompanyController:
 
     def load_initial_data(self):
         # Load some sample customers and products
-        c1 = self.company.add_customer("Ignacia Craft", 1500.50)
-        c2 = self.company.add_customer("Scarlett Wise", 150.75)
-        c3 = self.company.add_customer("Fredericka Houston", 200.00)
-        c4 = self.company.add_customer("Gage Rodgers", 1000.00)
-        c5 = self.company.add_customer("Gay Burris", 500.00)
-        c6 = self.company.add_customer("Imogene Cruz", 100.00)
-        c7 = self.company.add_customer("Karina Matthews", 200.00)
-        c8 = self.company.add_customer("Dara McGee", 300.00)
-        c9 = self.company.add_customer("Prescott Bowen", 400.00)
-        c10 = self.company.add_customer("Samson Howell", 500.00)
+        c1 = self.company.add_customer("Ignacia Craft", 0)
+        c2 = self.company.add_customer("Scarlett Wise", 0)
+        c3 = self.company.add_customer("Fredericka Houston", 0)
+        c4 = self.company.add_customer("Gage Rodgers", 0)
+        c5 = self.company.add_customer("Gay Burris", 0)
+        c6 = self.company.add_customer("Imogene Cruz", 0)
+        c7 = self.company.add_customer("Karina Matthews", 0)
+        c8 = self.company.add_customer("Dara McGee", 0)
+        c9 = self.company.add_customer("Prescott Bowen", 0)
+        c10 = self.company.add_customer("Samson Howell", 0)
         self.view.set_customer_combobox([c.customerName for c in self.company.customers])
         
         p1 = self.company.add_product("Post-It Notes", 15.89)
