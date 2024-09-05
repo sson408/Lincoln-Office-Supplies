@@ -39,7 +39,7 @@ class CompanyController:
         if customer:
             info = (f"Customer ID: {customer.customerID}\n"
                     f"Customer Name: {customer.customerName}\n"
-                    f"Balance: {customer.customerBalance:.2f}\n")
+                    f"Balance: ${customer.customerBalance:.2f}\n")
             self.view.update_customer_info(info)
             self.current_order = self.company.add_order(customer) 
             self.view.clear_order_details()
@@ -51,7 +51,7 @@ class CompanyController:
             quantity = self.view.get_quantity()
             if product and quantity > 0:
                 self.current_order.add_item(product, quantity)
-                details = f"{product.productName} x{quantity} Subtotal: {product.productPrice * quantity:.2f}\n"
+                details = f"{product.productName} - {product.productPrice} x {quantity} Subtotal: ${product.productPrice * quantity:.2f}\n"
                 self.view.update_order_details(details)
             else:
                 print("Invalid product or quantity.")
@@ -62,6 +62,8 @@ class CompanyController:
         if self.current_order:
             self.current_order.customer.customerBalance += self.current_order.totalAmount
             messagebox.showinfo("Order Submitted", f"Order {self.current_order.orderID} has been submitted.")
+            # refresh customer info display
+            self.display_customer_info(None)
             self.current_order = None
 
     def process_payment(self):
@@ -69,9 +71,13 @@ class CompanyController:
         customer = self.company.find_customer(customer_name)
         payment_amount = self.view.get_payment_amount()
         if customer and payment_amount > 0:
-            self.company.add_payment(customer, payment_amount)
-            messagebox.showinfo("Payment Processed", f"Payment of {payment_amount:.2f} processed for {customer.customerName}.")
-            self.display_customer_info(None)  # Refresh customer info display
+            success = self.company.add_payment(customer, payment_amount)
+            if success:
+                messagebox.showinfo("Payment Processed", f"Payment of {payment_amount:.2f} processed for {customer.customerName}.")
+                # refresh customer info display
+                self.display_customer_info(None) 
+            else:
+                 messagebox.showwarning("Warning!", "Please check currrent balance!")
 
     def list_customer_orders(self):
         customer_name = self.view.get_selected_customer()

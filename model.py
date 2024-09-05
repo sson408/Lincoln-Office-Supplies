@@ -77,7 +77,15 @@ class Company:
     def add_payment(self, customer, amount):
         payment = Payment(customer, amount)
         customer.payments.append(payment)
-        customer.customerBalance -= amount
+        # check if customer has enough balance
+        if customer.customerBalance >= amount:
+            # reduce customer balance by amount
+            customer.customerBalance -= amount
+            return True
+        else:
+            # if not enough balance, return false to indicate payment failure
+            return False
+        
 
     def list_orders(self, customer):
         return customer.orders
