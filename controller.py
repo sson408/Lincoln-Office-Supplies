@@ -41,43 +41,101 @@ class CompanyController:
                     f"Customer Name: {customer.customerName}\n"
                     f"Balance: ${customer.customerBalance:.2f}\n")
             self.view.update_customer_info(info)
-            self.current_order = self.company.add_order(customer) 
+            # self.current_order = self.company.add_order(customer) 
             self.view.clear_order_details()
 
-    def add_product_to_order(self):
-        if self.current_order:
-            product_name = self.view.get_selected_product()
-            product = self.company.find_product(product_name)
-            quantity = self.view.get_quantity()
-            if product and quantity > 0:
-                self.current_order.add_item(product, quantity)
-                details = f"{product.productName} - {product.productPrice} x {quantity} Subtotal: ${product.productPrice * quantity:.2f}\n"
-                self.view.update_order_details(details)
+    def add_product_to_order(self):       
+        #check if there is a current order
+        if not self.current_order:
+            customer_name = self.view.get_selected_customer()
+            customer = self.company.find_customer(customer_name)
+            if customer:
+                self.current_order = self.company.add_order(customer)
             else:
-                print("Invalid product or quantity.")
+                messagebox.showwarning("Warning!", "Please select a customer!")
+                return
+
+        #check if there is a selected product
+        product_name = self.view.get_selected_product()
+        product = self.company.find_product(product_name)
+        if not product:
+            messagebox.showwarning("Warning!", "Please select a product!")
+            return
+
+        # check if there is a valid quantity
+        quantity = self.view.get_quantity()
+        if product and quantity is not None and quantity > 0:
+            self.current_order.add_item(product, quantity)
+            details = f"{product.productName} - {product.productPrice} x {quantity} Subtotal: ${product.productPrice * quantity:.2f}\n"
+            #clear current display information
+            self.view.clear_order_details()    
+            
+            #update order details display
+            self.view.update_order_details(details)
+
+            #clear selected product and quantity
+            self.view.product_var.set('')
+            self.view.quantity_var.set('')
         else:
-            print("No current order found.")
+            messagebox.showwarning("Warning!", "Please enter a valid quantity!")
+
 
     def submit_order(self):
-        if self.current_order:
+        # check if there is a current order and selected products and quantities
+        if self.current_order and self.current_order.items:
             self.current_order.customer.customerBalance += self.current_order.totalAmount
             messagebox.showinfo("Order Submitted", f"Order {self.current_order.orderID} has been submitted.")
             # refresh customer info display
             self.display_customer_info(None)
+            #clear selected product and quantity and selected customer
+            self.view.product_var.set('')
+            self.view.quantity_var.set('')
+            #clear current order
             self.current_order = None
+        else:
+            messagebox.showwarning("Warning!", "No current order found! Please make sure you have selected a customer and added products to the order.")
 
     def process_payment(self):
         customer_name = self.view.get_selected_customer()
+        if not customer_name:
+            messagebox.showwarning("Warning!", "Please select a customer!")
+            return
+    
         customer = self.company.find_customer(customer_name)
         payment_amount = self.view.get_payment_amount()
-        if customer and payment_amount > 0:
-            success = self.company.add_payment(customer, payment_amount)
-            if success:
-                messagebox.showinfo("Payment Processed", f"Payment of {payment_amount:.2f} processed for {customer.customerName}.")
-                # refresh customer info display
-                self.display_customer_info(None) 
-            else:
-                 messagebox.showwarning("Warning!", "Please check currrent balance!")
+
+        #check if there is a selected customer
+        if not customer:
+            messagebox.showwarning("Warning!", "Please select a customer!")
+            return
+        
+        #check if there is a valid payment amount
+        try:
+            payment_amount = float(payment_amount)
+            if payment_amount <= 0:
+                raise ValueError("Payment amount must be a positive number.")
+        except ValueError:
+            messagebox.showwarning("Warning!", "Please enter a valid payment amount!")
+            return
+        
+        #check if customer has a balance
+        if customer.customerBalance <= 0:
+            messagebox.showwarning("Warning!", f"{customer.customerName} has no outstanding balance!")
+            return
+        
+        #check if payment amount is greater than customer balance
+        if payment_amount > customer.customerBalance:
+            messagebox.showwarning("Warning!", "Payment amount is greater than customer balance!")
+            return
+        
+        #process payment
+        success = self.company.add_payment(customer, payment_amount)
+        if success:
+            messagebox.showinfo("Payment Processed", f"Payment of {payment_amount:.2f} processed for {customer.customerName}.")
+            # refresh customer info display
+            self.display_customer_info(None)
+        else:
+            messagebox.showwarning("Warning!", "There was an issue processing the payment. Please try again.")
 
     def list_customer_orders(self):
         customer_name = self.view.get_selected_customer()

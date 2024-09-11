@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
 class CompanyView:
     def __init__(self, root, controller=None):
@@ -75,10 +76,33 @@ class CompanyView:
         return self.product_var.get()
 
     def get_quantity(self):
-        return self.quantity_var.get()
+        try:
+            # get the quantity value and make sure it is an positive integer
+            quantity = int(self.quantity_var.get())
+            if quantity <= 0:
+                raise ValueError("Quantity must be a positive integer")        
+            return quantity
+        except (ValueError, tk.TclError):
+            messagebox.showwarning("Invalid Quantity", "Please enter a valid quantity greater than zero.")
+            return None
 
     def get_payment_amount(self):
-        return self.payment_var.get()
+        # need to check if the payment amount is a valid number
+        try:
+            payment_input = self.payment_var.get()
+            # check if payment amount is empty
+            if not payment_input:
+                messagebox.showwarning("Invalid Payment Amount", "Please enter a payment amount.")
+                return None
+            
+            payment_amount = float(payment_input)
+            if payment_amount <= 0:
+                raise ValueError("Payment amount must be a positive number.")
+            return payment_amount
+        except (ValueError, tk.TclError):
+            messagebox.showwarning("Invalid Payment Amount", "Please enter a valid payment amount greater than zero.")
+            return None
+        
 
     def set_controller(self, controller):
         self.controller = controller
