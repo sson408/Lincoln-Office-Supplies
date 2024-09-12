@@ -11,6 +11,6 @@ if __name__ == "__main__":
     
     controller = CompanyController(company, view)
     
-    view.set_controller(controller)
+    view.setController(controller)
     
     root.mainloop()

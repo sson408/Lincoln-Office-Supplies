@@ -2,178 +2,228 @@ from tkinter import messagebox
 
 class CompanyController:
     def __init__(self, company, view):
-        self.company = company
-        self.view = view
-        self.current_order = None
-        self.load_initial_data()
+        self.__company = company
+        self.__view = view
+        self.__currentOrder = None
+        self.__loadInitialData()
 
-    def load_initial_data(self):
+    def __loadInitialData(self):
         # Load some sample customers and products
-        c1 = self.company.add_customer("Ignacia Craft", 0)
-        c2 = self.company.add_customer("Scarlett Wise", 0)
-        c3 = self.company.add_customer("Fredericka Houston", 0)
-        c4 = self.company.add_customer("Gage Rodgers", 0)
-        c5 = self.company.add_customer("Gay Burris", 0)
-        c6 = self.company.add_customer("Imogene Cruz", 0)
-        c7 = self.company.add_customer("Karina Matthews", 0)
-        c8 = self.company.add_customer("Dara McGee", 0)
-        c9 = self.company.add_customer("Prescott Bowen", 0)
-        c10 = self.company.add_customer("Samson Howell", 0)
-        self.view.set_customer_combobox([c.customerName for c in self.company.customers])
-        
-        p1 = self.company.add_product("Post-It Notes", 15.89)
-        p2 = self.company.add_product("Blue Ballpoint Pens Box of 50", 32.65)
-        p3 = self.company.add_product("Red Ballpoint Pens Box of 50", 32.65)
-        p4 = self.company.add_product("Black Ballpoint Pens Box of 50", 32.65)
-        p5 = self.company.add_product("Everyday Scissors 200mm", 21.85)
-        p6 = self.company.add_product("Black Whiteboard Markers Pack of 6", 20.23)
-        p7 = self.company.add_product("Red Whiteboard Markers Pack of 6", 20.23)
-        p8 = self.company.add_product("Blue Whiteboard Markers Pack of 6", 20.23)
-        p9 = self.company.add_product("White Copy Paper Pack of 500", 8.69)
-        p10 = self.company.add_product("Full Strip Metal Stapler", 41.62)
-        self.view.set_product_combobox([p.productName for p in self.company.products])
+        c1 = self.__company.addCustomer("Ignacia Craft", 0)
+        c2 = self.__company.addCustomer("Scarlett Wise", 0)
+        c3 = self.__company.addCustomer("Fredericka Houston", 0)
+        c4 = self.__company.addCustomer("Gage Rodgers", 0)
+        c5 = self.__company.addCustomer("Gay Burris", 0)
+        c6 = self.__company.addCustomer("Imogene Cruz", 0)
+        c7 = self.__company.addCustomer("Karina Matthews", 0)
+        c8 = self.__company.addCustomer("Dara McGee", 0)
+        c9 = self.__company.addCustomer("Prescott Bowen", 0)
+        c10 = self.__company.addCustomer("Samson Howell", 0)
+        self.__view.setCustomerCombobox([c.customerName for c in self.__company.listAllCustomers()])
 
-    def display_customer_info(self, event):
-        customer_name = self.view.get_selected_customer()
-        customer = self.company.find_customer(customer_name)
+        p1 = self.__company.addProduct("Post-It Notes", 15.89)
+        p2 = self.__company.addProduct("Blue Ballpoint Pens Box of 50", 32.65)
+        p3 = self.__company.addProduct("Red Ballpoint Pens Box of 50", 32.65)
+        p4 = self.__company.addProduct("Black Ballpoint Pens Box of 50", 32.65)
+        p5 = self.__company.addProduct("Everyday Scissors 200mm", 21.85)
+        p6 = self.__company.addProduct("Black Whiteboard Markers Pack of 6", 20.23)
+        p7 = self.__company.addProduct("Red Whiteboard Markers Pack of 6", 20.23)
+        p8 = self.__company.addProduct("Blue Whiteboard Markers Pack of 6", 20.23)
+        p9 = self.__company.addProduct("White Copy Paper Pack of 500", 8.69)
+        p10 = self.__company.addProduct("Full Strip Metal Stapler", 41.62)
+        self.__view.setProductCombobox([p.productName for p in self.__company.listAllProducts()])
+
+    def displayCustomerInfo(self, event):
+        customerName = self.__view.getSelectedCustomer()
+        customer = self.__company.findCustomer(customerName)
         if customer:
             info = (f"Customer ID: {customer.customerID}\n"
                     f"Customer Name: {customer.customerName}\n"
                     f"Balance: ${customer.customerBalance:.2f}\n")
-            self.view.update_customer_info(info)
-            # self.current_order = self.company.add_order(customer) 
-            self.view.clear_order_details()
+            self.__view.updateCustomerInfo(info)
+            self.__view.clearOrderDetails()
 
-    def add_product_to_order(self):       
-        #check if there is a current order
-        if not self.current_order:
-            customer_name = self.view.get_selected_customer()
-            customer = self.company.find_customer(customer_name)
+    def addProductToOrder(self):
+        # check if there is a current order
+        if not self.__currentOrder:
+            customerName = self.__view.getSelectedCustomer()
+            customer = self.__company.findCustomer(customerName)
             if customer:
-                self.current_order = self.company.add_order(customer)
+                # create a new order for the selected customer
+                self.__currentOrder = self.__company.addOrder(customer)
             else:
                 messagebox.showwarning("Warning!", "Please select a customer!")
                 return
 
-        #check if there is a selected product
-        product_name = self.view.get_selected_product()
-        product = self.company.find_product(product_name)
+        # check if there is a selected product and quantity
+        productName = self.__view.getSelectedProduct()
+        product = self.__company.findProduct(productName)
         if not product:
             messagebox.showwarning("Warning!", "Please select a product!")
             return
 
-        # check if there is a valid quantity
-        quantity = self.view.get_quantity()
+        quantity = self.__view.getQuantity()
+        # check if quantity is valid
         if product and quantity is not None and quantity > 0:
-            self.current_order.add_item(product, quantity)
+            self.__currentOrder.addItem(product, quantity)
             details = f"{product.productName} - {product.productPrice} x {quantity} Subtotal: ${product.productPrice * quantity:.2f}\n"
-            #clear current display information
-            self.view.clear_order_details()    
-            
-            #update order details display
-            self.view.update_order_details(details)
-
+            #clear order details
+            self.__view.clearOrderDetails()
+            #update order details
+            self.__view.updateOrderDetails(details)
             #clear selected product and quantity
-            self.view.product_var.set('')
-            self.view.quantity_var.set('')
+            self.__view.clearSelectedProduct()
+            self.__view.resetQuantity()
         else:
-            messagebox.showwarning("Warning!", "Please enter a valid quantity!")
+            messagebox.showwarning("Warning!", "Please enter a valid quantity! Quantity must be a positive integer!")
 
 
-    def submit_order(self):
-        # check if there is a current order and selected products and quantities
-        if self.current_order and self.current_order.items:
-            self.current_order.customer.customerBalance += self.current_order.totalAmount
-            messagebox.showinfo("Order Submitted", f"Order {self.current_order.orderID} has been submitted.")
+    def submitOrder(self):
+        # check if there is a current order and if there are items in the order
+        if self.__currentOrder and self.__currentOrder.items:
+            # set the balance of the customer to the total amount of the order
+            self.__currentOrder.customer.customerBalance += self.__currentOrder.totalAmount
+            messagebox.showinfo("Order Submitted", f"Order {self.__currentOrder.orderID} has been submitted.")
             # refresh customer info display
-            self.display_customer_info(None)
-            #clear selected product and quantity and selected customer
-            self.view.product_var.set('')
-            self.view.quantity_var.set('')
-            #clear current order
-            self.current_order = None
+            self.displayCustomerInfo(None)
+            # clear the product combobox
+            self.__view.clearSelectedProduct()
+            # reset the quantity
+            self.__view.resetQuantity()
+            # clear the order details
+            self.__view.clearOrderDetails() 
+            # clear the current order
+            self.__currentOrder = None
         else:
             messagebox.showwarning("Warning!", "No current order found! Please make sure you have selected a customer and added products to the order.")
 
-    def process_payment(self):
-        customer_name = self.view.get_selected_customer()
-        if not customer_name:
-            messagebox.showwarning("Warning!", "Please select a customer!")
-            return
-    
-        customer = self.company.find_customer(customer_name)
-        payment_amount = self.view.get_payment_amount()
 
-        #check if there is a selected customer
-        if not customer:
+    def processPayment(self):
+        customerName = self.__view.getSelectedCustomer()       
+        customer = self.__company.findCustomer(customerName)
+        # check if there is a selected customer
+        if not customerName:
             messagebox.showwarning("Warning!", "Please select a customer!")
             return
-        
-        #check if there is a valid payment amount
-        try:
-            payment_amount = float(payment_amount)
-            if payment_amount <= 0:
-                raise ValueError("Payment amount must be a positive number.")
-        except ValueError:
+
+        # check if there is a valid payment amount
+        paymentAmount = self.__view.getPaymentAmount()
+        if paymentAmount is None:
             messagebox.showwarning("Warning!", "Please enter a valid payment amount!")
             return
         
-        #check if customer has a balance
+        # check if customer has a balance
         if customer.customerBalance <= 0:
             messagebox.showwarning("Warning!", f"{customer.customerName} has no outstanding balance!")
             return
-        
-        #check if payment amount is greater than customer balance
-        if payment_amount > customer.customerBalance:
+        # check if payment amount is greater than customer balance
+        if paymentAmount > customer.customerBalance:
             messagebox.showwarning("Warning!", "Payment amount is greater than customer balance!")
             return
         
-        #process payment
-        success = self.company.add_payment(customer, payment_amount)
-        if success:
-            messagebox.showinfo("Payment Processed", f"Payment of {payment_amount:.2f} processed for {customer.customerName}.")
-            # refresh customer info display
-            self.display_customer_info(None)
+        # Ask for confirmation before processing the payment
+        confirm = messagebox.askokcancel(
+            "Confirm Payment", 
+            f"Are you sure you want to process the payment of ${paymentAmount:.2f} for {customer.customerName}?"
+        )
+        
+        if confirm:
+            # process payment
+            success = self.__company.addPayment(customer, paymentAmount)
+            if success:
+                messagebox.showinfo("Payment Processed", f"Payment of {paymentAmount:.2f} processed for {customer.customerName}.")
+                self.displayCustomerInfo(None)
+                #clear payment amount
+                self.__view.clearPaymentAmount()
+            else:
+                messagebox.showwarning("Warning!", "There was an issue processing the payment. Please try again.")
         else:
-            messagebox.showwarning("Warning!", "There was an issue processing the payment. Please try again.")
-
-    def list_customer_orders(self):
-        customer_name = self.view.get_selected_customer()
-        customer = self.company.find_customer(customer_name)
+            messagebox.showinfo("Payment Cancelled", "Payment has been cancelled.")
+            
+    def listCustomerOrders(self):
+        customerName = self.__view.getSelectedCustomer()
+        customer = self.__company.findCustomer(customerName)
         if customer:
-            orders = self.company.list_orders(customer)
-            self.view.clear_order_details()
+            orders = self.__company.listOrders(customer)
+            # check if there are orders
+            if not orders:
+                #clear order details
+                self.__view.clearOrderDetails()
+
+                self.__view.updateOrderDetails("No orders found.")
+                return
+            
+            self.__view.clearOrderDetails()
             for order in orders:
-                details = f"Order ID: {order.orderID} Date: {order.orderDate} Total: {order.totalAmount:.2f}\n"
-                self.view.update_order_details(details)
-
-    def list_customer_payments(self):
-        customer_name = self.view.get_selected_customer()
-        customer = self.company.find_customer(customer_name)
+                formattedOrderDate = order.orderDate.strftime("%d %B %Y %H:%M:%S")
+                details = f"Order ID: {order.orderID}, Date: {formattedOrderDate}, Total: ${order.totalAmount:.2f}\n"
+                self.__view.updateOrderDetails(details)
+        else:
+            messagebox.showwarning("Warning!", "Please select a customer!")
+              
+    def listCustomerPayments(self):
+        customerName = self.__view.getSelectedCustomer()
+        customer = self.__company.findCustomer(customerName)
         if customer:
-            payments = self.company.list_payments(customer)
-            self.view.clear_order_details()
+            payments = self.__company.listPayments(customer)
+            # check if there are payments
+            if not payments:
+                #clear order details
+                self.__view.clearOrderDetails()
+
+                self.__view.updateOrderDetails("No payments found.")
+                return
+            
+            self.__view.clearOrderDetails()
             for payment in payments:
-                details = f"Payment Date: {payment.paymentDate} Amount: {payment.paymentAmount:.2f}\n"
-                self.view.update_order_details(details)
+                formattedPaymentDate = payment.paymentDate.strftime("%d %B %Y %H:%M:%S")
+                details = f"Payment Date: {formattedPaymentDate}, Amount: ${payment.paymentAmount:.2f}\n"
+                self.__view.updateOrderDetails(details)
+        else:
+            messagebox.showwarning("Warning!", "Please select a customer!")
 
-    def list_all_customers(self):
-        self.view.clear_order_details()
-        customers = self.company.list_all_customers()
+    def listAllCustomers(self):
+        self.__view.clearOrderDetails()
+        customers = self.__company.listAllCustomers()
+        # check if there are customers
+        if not customers:
+            #clear order details
+            self.__view.clearOrderDetails()
+
+            self.__view.updateOrderDetails("No customers found.")
+            return
+        
         for customer in customers:
-            details = f"Customer ID: {customer.customerID} Name: {customer.customerName} Balance: {customer.customerBalance:.2f}\n"
-            self.view.update_order_details(details)
+            details = f"Customer ID: {customer.customerID}, Name: {customer.customerName}, Balance: ${customer.customerBalance:.2f}\n"
+            self.__view.updateOrderDetails(details)
 
-    def list_all_orders(self):
-        self.view.clear_order_details()
-        orders = self.company.list_all_orders()
+    def listAllOrders(self):
+        self.__view.clearOrderDetails()
+        orders = self.__company.listAllOrders()
+        # check if there are orders
+        if not orders:
+            #clear order details
+            self.__view.clearOrderDetails()
+            self.__view.updateOrderDetails("No orders found.")
+            return
+        
         for order in orders:
-            details = f"Order ID: {order.orderID} Customer: {order.customer.customerName} Total: {order.totalAmount:.2f}\n"
-            self.view.update_order_details(details)
+            details = f"Order ID: {order.orderID}, Customer: {order.customer.customerName}, Total: ${order.totalAmount:.2f}\n"
+            self.__view.updateOrderDetails(details)
 
-    def list_all_payments(self):
-        self.view.clear_order_details()
-        payments = self.company.list_all_payments()
+    def listAllPayments(self):
+        self.__view.clearOrderDetails()
+        payments = self.__company.listAllPayments()
+        # check if there are payments
+        if not payments:
+            #clear order details
+            self.__view.clearOrderDetails()
+
+            self.__view.updateOrderDetails("No payments found.")
+            return
+        
         for payment in payments:
-            details = f"Payment Date: {payment.paymentDate} Customer: {payment.customer.customerName} Amount: {payment.paymentAmount:.2f}\n"
-            self.view.update_order_details(details)
+            # format payment date
+            formattedPaymentDate = payment.paymentDate.strftime("%d %B %Y %H:%M:%S")
+            details = f"Payment Date: {formattedPaymentDate}, Customer: {payment.customer.customerName}, Amount: ${payment.paymentAmount:.2f}\n"
+            self.__view.updateOrderDetails(details)
